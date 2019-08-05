@@ -1,1 +1,1 @@
-# point_mall_api
+# Point mall 실습 
