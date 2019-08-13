@@ -4,6 +4,7 @@ from rest_framework.decorators import action
 from django.db import transaction
 from rest_condition import Or, And
 
+from .permissions import IsSafeMethod, InPurchase
 from .models import Item, UserItem, Category
 from .serializers import ItemSerializer, UserItemSerializer, CategorySerializer
 
@@ -11,7 +12,11 @@ from .serializers import ItemSerializer, UserItemSerializer, CategorySerializer
 class ItemViewSet(viewsets.ModelViewSet):
     queryset = Item.objects.all()
     serializer_class = ItemSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = (Or(
+        IsSafeMethod,
+        permissions.IsAdminUser,
+        And(InPurchase, permissions.IsAuthenticated)
+    ),)
 
     @action(detail=True, methods=['POST'])
     def purchase(self, request, *args, **kwargs):
