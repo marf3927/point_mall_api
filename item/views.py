@@ -71,5 +71,5 @@ class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
     @action(detail=True)
     def items(self, request, *args, **kwargs):
         category = self.get_object()
-        serializer = ItemSerializer(category.items.all(), many=True)
+        serializer = ItemSerializer(category.items.all(), many=True, context=self.get_serializer_context())
         return Response(serializer.data)
