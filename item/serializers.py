@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Item, UserItem, Category
+from .models import Item, UserItem, Category, HistoryItem, History
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -9,12 +9,11 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class ItemSerializer(serializers.ModelSerializer):
-    category = CategorySerializer(read_only = True)
-    category_id =serializers.IntegerField(write_only = True)
+    category = CategorySerializer(read_only=True, many=True)
 
     class Meta:
         model = Item
-        fields = ['id', 'title', 'category', 'category_id', 'description', 'created', 'price', 'image']
+        fields = ['id', 'title', 'category', 'description', 'created', 'price', 'image']
 
 
 class UserItemSerializer(serializers.ModelSerializer):
@@ -23,4 +22,20 @@ class UserItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserItem
         fields = ['item', 'user', 'count']
+
+
+class HistoryItemSerializer(serializers.ModelSerializer):
+    item = ItemSerializer()
+
+    class Meta:
+        model = HistoryItem
+        fields = ['history', 'item', 'count']
+
+
+class HistorySerializer(serializers.ModelSerializer):
+    items = HistoryItemSerializer(many=True)
+
+    class Meta:
+        model = History
+        fields = ['id', 'user', 'created', 'is_refunded', 'items']
 
