@@ -1,13 +1,14 @@
 from rest_framework import viewsets, permissions, status
 from rest_framework.response import Response
 from rest_framework.decorators import action
+from rest_framework.views import APIView
 from django.db import transaction
 from rest_condition import Or, And
-import json
 
 from .permissions import IsSafeMethod, InPurchase
-from .models import Item, UserItem, Category, History, HistoryItem
-from .serializers import ItemSerializer, UserItemSerializer, CategorySerializer, HistorySerializer, HistoryItemSerializer
+from .models import Item, UserItem, Category, History, HistoryItem, Tag
+from .serializers import ItemSerializer, UserItemSerializer, \
+    CategorySerializer, HistorySerializer, HistoryItemSerializer, TagSerializer
 
 
 class ItemViewSet(viewsets.ModelViewSet):
@@ -75,10 +76,43 @@ class ItemViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         item = serializer.save()
-        category = self.request.data['category_id']
-        for i in json.loads(category):
-            print(i)
-            item.category.add(Category.objects.get(id=i))
+        category_ids = self.request.data['category_ids'].split(',')
+        categories = Category.objects.filter(id__in=category_ids)
+        item.categories.set(categories)
+
+        tags = self.request.data['tags'].split(',')
+        for tag in tags:
+            tag, is_created = Tag.objects.get_or_create(tag=tag)
+            item.tag.add(tag)
+
+    def perform_update(self, serializer):
+        item = serializer.save()
+        category_ids = self.request.data['category_ids'].split(',')
+        categories = Category.objects.filter(id__in=category_ids)
+        item.categories.set(categories)
+
+        tags = self.request.data['tags'].split(',')
+        tag_list = []
+        for tag in tags:
+            tag, is_created = Tag.objects.get_or_create(tag=tag)
+            tag_list.append(tag)
+        item.tag.set(tag_list)
+
+    @action(detail=True, methods=['POST', 'DELETE'])
+    def tags(self, request, *args, **kwargs):
+        item = self.get_object()
+        if request.method == 'POST':
+            for tag in request.data['tags']:
+                tag, is_created = Tag.objects.get_or_create(tag=tag)
+                item.tag.add(tag)
+        elif request.method == 'DELETE':
+            try:
+                for tag in request.data['tags']:
+                    tag = Tag.objects.get(tag=tag)
+                    item.tag.remove(tag)
+            except Tag.DoesNotExist:
+                pass
+        return Response(self.get_serializer(item).data)
 
 
 class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
@@ -90,6 +124,19 @@ class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
         category = self.get_object()
         serializer = ItemSerializer(category.items.all(), many=True, context=self.get_serializer_context())
         return Response(serializer.data)
+
+
+class TagItems(APIView):
+    def get(self, request, tag):
+        items = []
+        try:
+            tag = Tag.objects.get(tag=tag)
+            items = tag.item.all()
+        except Tag.DoesNotExist:
+            pass
+        return Response(
+            ItemSerializer(items, many=True, context={'request': request}).data
+        )
 
 
 class HistoryViewSet(viewsets.ReadOnlyModelViewSet):

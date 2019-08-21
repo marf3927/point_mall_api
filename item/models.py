@@ -6,11 +6,16 @@ class Category(models.Model):
     title = models.CharField(max_length=100)
 
 
+class Tag(models.Model):
+    tag = models.CharField(max_length=10)
+
+
 class Item(models.Model):
     title = models.CharField(max_length=100)
     description = models.TextField()
     created = models.DateTimeField(auto_now_add=True)
-    category = models.ManyToManyField(Category, related_name='items')
+    categories = models.ManyToManyField(Category, related_name='items')
+    tag = models.ManyToManyField(Tag, related_name='item')
 
     price = models.IntegerField(default=0)
     image = models.ImageField(upload_to='uploads/item_images/')
