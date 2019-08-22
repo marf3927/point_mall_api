@@ -13,4 +13,5 @@ urlpatterns = [
     path('me/', include('user.urls.me_urls')),
     path('media/uploads/item_images/<str:file_name>', views.image_view),
     path('categories/', include('item.urls.category_urls')),
+    path('', views.root_view),
 ]
