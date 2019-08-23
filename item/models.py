@@ -1,5 +1,6 @@
 from django.db import models
 from user.models import User
+import random
 
 
 class Category(models.Model):
@@ -10,6 +11,11 @@ class Tag(models.Model):
     tag = models.CharField(max_length=10)
 
 
+def get_item_image_path(instance, filename):
+    filename = str(random.randint(10000,100000)) + filename
+    path = 'item_images/%s' % filename
+
+
 class Item(models.Model):
     title = models.CharField(max_length=100)
     description = models.TextField()
@@ -18,7 +24,7 @@ class Item(models.Model):
     tag = models.ManyToManyField(Tag, related_name='item')
 
     price = models.IntegerField(default=0)
-    image = models.ImageField(upload_to='uploads/item_images/')
+    image = models.ImageField(upload_to='item_images/')
 
 
 class UserItem(models.Model):
