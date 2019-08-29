@@ -86,7 +86,7 @@ DATABASES = {
         'NAME': 'point_mall',
         'USER': 'root',
         'PASSWORD': 'pointmallpwd',
-        'HOST': 'point-mall.cijixwpyzfq3.us-east-1.rds.amazonaws.com',
+        'HOST': 'pointmall.cyhi46dj99z4.ap-northeast-2.rds.amazonaws.com',
         'PORT': '3306'
     }
 }
@@ -139,14 +139,10 @@ REST_FRAMEWORK = {
 
 OAUTH2_PROVIDER = {
     'OAUTH2_BACKEND_CLASS': 'oauth2_provider.oauth2_backends.JSONOAuthLibCore',
-    # 'ACCESS_TOKEN_EXPIRE_SECONDS': 5
 }
 
-AWS_ACCESS_KEY_ID = 'ASIAUG4HITATQQTPU3KN'
-AWS_SECRET_ACCESS_KEY = 'jQ0p+GaACYjJL92glDDnsngflMCs61Sf4sLIuUXK'
-AWS_SESSION_TOKEN = 'FQoGZXIvYXdzEKP//////////wEaDJxc40Gaegi9WoE7vCKBAhqNYn+I3bTkaONCy8z/sf+tlew5RVyfKSREZ9a+dyfTNfjWKCa2DMApJPmTtBbFXQ5d/+6K2d5lShvAs0wqChFFpfWkZ9VLmCvoNUQrYPDhJyim7yIiuyghiVkrGQdtCLhUORhFwUlSQRUAI0/UmKFnhupT6M6dPgv6Lwn9Zduc1ENE9hbOolUKzqoETCvTiBKbyLabMA2siLdQ0vMyV43zozY6X3z6fjWJaisvGiHOatwkl0esR/0Df/FU/+PtlWqCocooWxzQ3x+opspAVM3jdlRjCAj7QyjjP3vSehqxHpnWCR06M9ZEwjntutAqvkvSxBvJ3cjA4MmWWIQDwcsUKK/0jOsF'
-AWS_STORAGE_BUCKET_NAME = 'cdn.pointmall.marf'
-AWS_S3_CUSTOM_DOMAIN = 'd1q2jscln6pmre.cloudfront.net'
+AWS_STORAGE_BUCKET_NAME = 'cdn.pointmall.marf1'
+AWS_S3_CUSTOM_DOMAIN = 'dfhi0p445d74h.cloudfront.net'
 AWS_S3_URL = 'https://%s/' % AWS_S3_CUSTOM_DOMAIN
 AWS_S3_SIGNATURE_VERSION = 's3v4'
 
@@ -156,4 +152,4 @@ STATICFILES_STORAGE = 'point_mall.storages.StaticStorage'
 
 AWS_LOCATION = 'assets/'
 ASSET_URL = '%s%s' % (AWS_S3_URL, AWS_LOCATION)
-DEFAULT_FILE_STORAGE = 'point_mall.storages.FileStorage'
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
